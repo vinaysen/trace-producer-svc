@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/vinaysen/trace-producer-svc.svg?branch=master)](https://travis-ci.org/vinaysen/trace-producer-svc)
+
 # TraceProducer
 
 How to start the TraceProducer application
