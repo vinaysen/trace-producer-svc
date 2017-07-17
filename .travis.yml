@@ -4,3 +4,30 @@ jdk:
 
 services:
 - docker
+
+env:
+  global:
+  # docker email
+  - secure: "Zh4APbbgLaAw+W/71qMvv0BJGcuC5FqD2GNCLAlCQMSroJ+RdB0Cp3IlKC5talHGj+HKYVlZ0a3c2KsfO1SS6ls2Sb+u0zjuwxS4o4NB1Sp2dBcfugYkoELXc2BcIYDVKOkYVNU6ebEvowY+hyv64a9itRrrWhYw6OIKgvOMXkswMBKRy6yK6zVn75k3rVvAFQArX4VAerFPCYurmnPSTf4fG4HpCDsTiwXBBCGhuy5ichFFabKDwKRPQg/2ufhRziuH+gfdrNr4H1frWBxeE587/pA/9lTXzIPzFVJ5PlRvonzwEPnT2LPSjYBbbAQ/2LoM32PjYM6T133DRc2R63r7nFrFxpVDmgStG103M1FME2ytG3VmdZ+nY835En4Zp4uzwkWA9XgaBHLmxaksr3op6jkST/fia/jv6jrEuMQxAC0bPqpJzdniy4rUbU68N88bX+dVIv9swyN2c+EYs+chjTnXKO3IGChMQSmFaL2u3AWXPURr1zpSPyh5SFuh7EultCXTpJl3W7zfhhCcgMfiTKU8o2vURpw/t4PVoACVqEghtzhq871yw8wZAKhyhk0e3k9HHAx+raTlelJc75HGXM+0e/+TkzqpJwCh238rS4LZafV04s5ZyWvLPpEL5TyD3eczyUlOOeHXXYHN51EMZEEPfTuQW5q4IyCcIms="
+  # docker user
+  - secure: "nMT0hw76XQ11uaJSfhI/lXZOWcAJHb5yUaXG7eptu5FCyZI4FNEynCI1DapsekwcRxtQ5Dk2nOIOLHozrzEZ2qdPyUzor7dQYoT4axvpW8DJX52MFQHe/PAsbmkHqPxhOHRGl5Tq5md6tmEbo6FEIs6PpYuNaYL1TbfU07MK1P3uoRe43npTE/BoHrVMWj/KaTDyRTkTNQvzuHgwFzDe6Znh4caHKD3hvqc0PASN8ULiyihdDYKoSmR1mZcWGDtW0Z3M8qwJP6M/k5c0rWpMQsuiGoBVwjqsxEEQ06N/dx/q5F4+4ESw7k11jj3Or0U69J5g9bMVCeJuRM++dkXgev1ewrks8NX+DY6QphiJ+4UPm/JOeFKyjnYXjgRgR0tytMlw7+wd+Ri/kdGmxt3qbB2Fq/4G7wbkGjIvqzGdd6eyx6b7bhnBUzrxtA9YW7WhHll7bCk+ToVzbFixAr/k9NI0eTwlU4WE9reVWLhl91sX2kqiLWAgo3NpIVluhksFHaq0yb6Fk8a7Qo//4Kt+fYNU9CVIGuCXqYy96AwpMz6Mj//UVOFgeh4Ym142rDm3fy0NpcxldSU0TmD+91FQmHDSgpAeWF3p9b+7eeP4V94vBqcvR5lqjAIYdmJJybsKgtUnfb6Ac4Oq8KMok58fD1ctomTIjUM48iBLvvA3SFI="
+  # docker password
+  - secure: "mA+mGcre8Mne78m3XrBHokniKua5rmqkW8OsGXgHB1s5dXMFcUjkJWvbGSgPymxgO/Zn1JpsMdwoaBqakWikissxDB/UkOLYTKI03sqHQsh/HJH6W46S33vfIlGN2z0sw3ZgFDJHZFavnnooxEmCo/fUgxhx++kuHB5IWOPyhnXlg1FJcf0zBJ4AyoxaSGVPUgv7xvaEhr8Pavc/ajPs/WP/j/isJxoFhval2aNHz+fEgfIjwbYczgHEeJwForEcquLoj2BMwByfdodi99E3K82yxvrrXacyb1NaOUf+fksgb2gvewQj7wDZLq6wqsgoS//YKStHnYymtY1E5WQYBwvUnHh2D/HbFqyqx7YYL+/hBVmAnYvK3iZb0Dl/mTvr/IzFAA5vFluH4c5E/BVOXo6M0746gHVBdQ7cBJRLqJGNbUQmduhL42zrRbKJXQ7ofhl+1HgLXgIZOArovp4FiT9t4mOU2arj5/EdXP1XcZ8IEDlTie1LWn/ULiCecwgxuPwWHPFsbca1WWNSa1Q44ZM8FDK4gFc8l0OmpRVX8eMnGODjL9MzhECa07uWyRekPD4ro1Tb5Ry7aMZUGN3l2eccqWwSexhXMvIyan8XwdiwNYf9DumqvUHjQDK3gCTHVoaTNxE7w76+M2MkPUyC2y+MIwPrIFzj5LZYN9No8n8="
+  - COMMIT=${TRAVIS_COMMIT::8}
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-engine
+
+# default travis install step for java : mvn install
+
+# default travis script step for java : mvn test
+
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=vinaysen88/trace-producer-svc
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
