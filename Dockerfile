@@ -12,5 +12,5 @@ ENV APP_JAR /app/target/trace-producer-svc-1.0-SNAPSHOT.jar
 COPY --from=builder ${APP_CONFIG} ${APP_CONFIG}
 COPY --from=builder ${APP_JAR} ${APP_JAR}
 # run
-EXPOSE 8081
+EXPOSE 8080
 CMD java -jar ${APP_JAR} server ${APP_CONFIG}
