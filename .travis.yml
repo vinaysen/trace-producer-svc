@@ -1,0 +1,34 @@
+sudo: required
+
+language: java
+
+jdk:
+  - oraclejdk8
+
+services:
+- docker
+
+env:
+  global:
+  # docker user
+  - secure: "VYzvowFdtTpe3miIGsPEFPPYiWX/4MsINBIu0sUHo0N1f/DZfAQ+IpUHiV93/pl41Iu41JbNxJ8E7xMwGKx85PSEggk0DNY8ZI87yUzhlUOhIPw+yBsfMGT6lSpNvS2n7Fp/Do8iUvzhVg2zcYPtaM2kJAIw4RezDGwZCqNCLSI+5kshE30z3ji5rTIKmJCwU6fjGyIhAZTsAhYnBxoJZPzbGlSHn6ryWcweGc5hdeJfcTlvj61QFMhb2nhmNtc5uTgU7fx/B5GY4Jy3OQbSCTfk85yOSM428Bphyn+wYgpVRt//VBzvwj459BswoWcWQgb7NMRwO+kSMgawfqruFfxG8lg48glxT1tgKRqeGNERkkPAk4wc2/65iti+HFhd/1VrPiXIL2N4hy97fXT8h2nrro+yBAdnG2Yw+lC8hl1BWr6Q7KEBUSaCJb81ecmw9yKVJrPG/eepNy77SsQbu+lO21i/PM6d75nER8ZrPC0G3zSuocqP/avj7S9H8g6vwGif1+PtlIIAiEaP2oxoom0lgTU12UhCH2brzldtvLOyNRGPV4WyKg64ef/S1g3rWtaOQ4PCiVLxEA1AXXb07onz17rGmjaMnNKzCrrZzcdiewaXNo7heH7rrI2GzWUZdxskYZTuBOo/mI48NlsNJ7c3D1otRdw0OaOJMN7n6Ao="
+  # docker password
+  - secure: "ogMjcjdof0F8WplqTUea71r0QF1Tn/wbpsf2d4qR8U6xhddHFIjk1uJOoERxGbq12mv3fJC04ii7UxRe/ip5OWn10Q+9kauLzRzL6XQRgD4368YMwMsTswQbJqwD5PhU03FIFEiFC+EVYBg4jzqwSMu8xB8VR2xYHFSBjuh/Wr47fR5rjo+loj4w2w6OvZxO9l/NBLvxsLHelP3d/gcnRmpI2HZikBemYNlQMkqjIRwMxsoYlChOXR3kuEfBAoZJ1KF5hquch+3X3BZTBhgPcRsi/o2QZgn94hFatq2vyi8kyveCek7Q37h8pD25Tuay2X8yyJADm776Kvrya3q8OSKzdNI+oj5Ix8ZDDz2mBZmsykMa7t2mCHN1pUB8IVR8wxG7elA9+dRoqePy3eCa/3LAjUF6/+6dlusbeqEMvzUkXpJBS/1vMULfVbKSAHC2FdFQxGMEWo908r8W21uAOEXVS5g6cnXOXb5gkTv2m52rvaad73xkH+nhi+WDuh9KStVEVKmVNrcFQPFay51mzHSoefapcJGehHwIRrEg3fs9wRy1WJ4fYXM02y9xWtQzBUFdE4A7IUrcj5isp82BPyN8Bjjjk3z0MxhvtxVpablWYy5pl0IYwjhti/NYBUTDh3RcZSmTB80c+60ZA/qxtssmfuzGwA97b4snGeZvj0c="
+  - COMMIT=${TRAVIS_COMMIT::8}
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+
+# default travis install step for java : mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+# default travis script step for java : mvn test -B
+
+after_success:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - export REPO=vinaysen88/trace-producer-svc
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
