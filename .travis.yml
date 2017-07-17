@@ -19,12 +19,12 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
-# default travis install step for java : mvn install
+# default travis install step for java : mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
-# default travis script step for java : mvn test
+# default travis script step for java : mvn test -B
 
 after_success:
-  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - export REPO=vinaysen88/trace-producer-svc
   - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
   - docker build -f Dockerfile -t $REPO:$COMMIT .
