@@ -22,7 +22,7 @@ before_install:
 # default travis script step for java : mvn test -B
 
 after_success:
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS https://hub.docker.com/
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS hub.docker.com
   - export REPO=vinaysen88/trace-producer-svc
   - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
   - docker build -f Dockerfile -t $REPO:$COMMIT .
