@@ -6,7 +6,7 @@ RUN mvn install
 
 # preparing release version
 FROM java:jre-alpine
-ENV APP_TARGET_PATH ${APP_HOME}/target
+ENV APP_TARGET_PATH /app/target
 WORKDIR /app
 COPY --from=builder ${APP_TARGET_PATH} ${APP_TARGET_PATH}
 EXPOSE 8081
