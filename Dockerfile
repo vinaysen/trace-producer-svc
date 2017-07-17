@@ -6,8 +6,11 @@ RUN mvn install
 
 # preparing release version
 FROM java:jre-alpine
-ENV APP_TARGET_PATH /app/target
-WORKDIR /app
-COPY --from=builder ${APP_TARGET_PATH} ${APP_TARGET_PATH}
+ENV APP_CONFIG /app/config.yml
+ENV APP_JAR /app/target/trace-producer-svc-1.0-SNAPSHOT.jar
+# copy jar and config
+COPY --from=builder ${APP_CONFIG} ${APP_CONFIG}
+COPY --from=builder ${APP_JAR} ${APP_JAR}
+# run
 EXPOSE 8081
-CMD java -jar ${APP_TARGET_PATH}/trace-producer-svc-1.0-SNAPSHOT.jar server config.yml
+CMD java -jar ${APP_JAR} server ${APP_CONFIG}
