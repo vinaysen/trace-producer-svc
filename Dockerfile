@@ -6,7 +6,7 @@ COPY . .
 RUN mvn install
 
 # preparing release version
-FROM maven:jre-alpine
+FROM java:jre-alpine
 ENV APP_JAR_PATH ${APP_HOME}/target/trace-producer-svc-1.0-SNAPSHOT.jar
 WORKDIR ${APP_HOME}
 COPY --from=builder ${APP_JAR_PATH} ${APP_JAR_PATH}
