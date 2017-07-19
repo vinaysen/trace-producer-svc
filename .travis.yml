@@ -6,20 +6,16 @@ jdk:
   - oraclejdk8
 
 services:
-- docker
+  - docker
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce # get latest version of docker for multi-stage build
-
-# default travis install step for java : mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-# default travis script step for java : mvn test -B
-
-after_success:
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - export REPO=vinaysen88/trace-producer-svc
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker build -f Dockerfile -t $REPO:$COMMIT .
-  - docker tag $REPO:$COMMIT $REPO:$TAG
-  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push $REPO
+script:
+# stylecheck, compile unit-test and build
+- mvn package
+# docker build and upload
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- export REPO=vinaysen88/trace-producer-svc
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+- docker build -f Dockerfile -t $REPO:$COMMIT .
+- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO

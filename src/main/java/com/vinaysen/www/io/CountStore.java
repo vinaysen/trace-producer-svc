@@ -7,7 +7,7 @@ public class CountStore {
     private final Jedis jedis;
 
     public CountStore() {
-        this.jedis = new Jedis("localhost");
+        this.jedis = new Jedis("redis");
         this.jedis.set(COUNT_FIELD, "0");
     }
 
