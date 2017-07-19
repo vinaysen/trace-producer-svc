@@ -1,5 +1,7 @@
 package com.vinaysen.www;
 
+import com.vinaysen.www.io.CountStore;
+import com.vinaysen.www.resources.CounterResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -23,7 +25,6 @@ public class TraceProducerApplication extends Application<TraceProducerConfigura
     @Override
     public void run(final TraceProducerConfiguration configuration,
                     final Environment environment) {
-        // TODO: implement application
+        environment.jersey().register(new CounterResource(new CountStore()));
     }
-
 }
