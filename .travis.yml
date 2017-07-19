@@ -9,6 +9,7 @@ services:
   - docker
 
 script:
+- COMMIT=${TRAVIS_COMMIT::8}
 # stylecheck, compile unit-test and build
 - mvn package
 # docker build and upload
